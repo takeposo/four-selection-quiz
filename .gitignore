@@ -18,7 +18,10 @@ yarn.lock
 .DS_Store
 
 # Quiz data
-quizzes.xlsx
+quizzes*.xlsx
+
+# Music data
+*.mp3
 
 # OS
 Thumbs.db

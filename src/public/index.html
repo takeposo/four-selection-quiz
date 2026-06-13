@@ -26,9 +26,9 @@
       <h1>四択クイズ</h1>
       <p>難易度を選んでください</p>
       <div class="difficulty-buttons">
-        <button id="easyBtn" class="difficulty-btn" onclick="selectDifficulty('易しい')">易しい</button>
-        <button id="normalBtn" class="difficulty-btn" onclick="selectDifficulty('普通')">普通</button>
-        <button id="hardBtn" class="difficulty-btn" onclick="selectDifficulty('難しい')">難しい</button>
+        <button id="easyBtn" class="difficulty-btn" onclick="selectDifficulty('易しい')" disabled>易しい</button>
+        <button id="normalBtn" class="difficulty-btn" onclick="selectDifficulty('普通')" disabled>普通</button>
+        <button id="hardBtn" class="difficulty-btn" onclick="selectDifficulty('難しい')" disabled>難しい</button>
       </div>
       <div class="stats">
         <p>残りクイズ数: 易しい <span id="easyCount">0</span> 問、普通 <span id="normalCount">0</span> 問、難しい <span id="hardCount">0</span> 問</p>
@@ -67,7 +67,7 @@
     <!-- 終了画面 -->
     <div id="finishScreen" class="screen">
       <h1>クイズ終了</h1>
-      <p>すべてのクイズが終了しました。</p>
+      <p>クイズは全て終了しました。</p>
       <p>お疲れ様でした！</p>
       <button onclick="location.reload()">もう一度やる</button>
     </div>

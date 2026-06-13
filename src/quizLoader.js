@@ -34,8 +34,8 @@ class QuizLoader {
 
       const quizzes = [];
 
-      // ヘッダー行をスキップ（インデックス0）、データ行を処理
-      for (let i = 1; i < rows.length; i++) {
+      // 1行目はタイトル、2行目はヘッダーとして扱い、データ行は3行目（インデックス2）から処理
+      for (let i = 2; i < rows.length; i++) {
         const row = rows[i];
 
         // 空行をスキップ
@@ -73,8 +73,8 @@ class QuizLoader {
   _parseRow(row, rowIndex) {
     const [id, question, option1, option2, option3, option4, correctAnswer, explanation, difficulty] = row;
 
-    // 必須フィールドの検証
-    if (!id || !question || !option1 || !option2 || !option3 || !option4 || !correctAnswer || !difficulty) {
+    // 必須フィールドの検証（難易度は空なら後でデフォルトを入れる）
+    if (!id || !question || !option1 || !option2 || !option3 || !option4 || !correctAnswer) {
       throw new Error('必須フィールドが不足しています');
     }
 
@@ -83,11 +83,11 @@ class QuizLoader {
     if (isNaN(correctNum) || correctNum < 1 || correctNum > 4) {
       throw new Error(`正解番号が無効です（1-4の数値である必要があります: ${correctAnswer}）`);
     }
-
-    // 難易度の検証
+    // 難易度が空の場合は '普通' をデフォルトとする
     const validDifficulties = ['易しい', '普通', '難しい'];
-    if (!validDifficulties.includes(difficulty)) {
-      throw new Error(`難易度が無効です（易しい、普通、難しい のいずれかである必要があります: ${difficulty}）`);
+    const difficultyVal = String(difficulty || '普通').trim();
+    if (!validDifficulties.includes(difficultyVal)) {
+      throw new Error(`難易度が無効です（易しい、普通、難しい のいずれかである必要があります: ${difficultyVal}）`);
     }
 
     return {
@@ -101,7 +101,7 @@ class QuizLoader {
       ],
       correctAnswer: correctNum,
       explanation: String(explanation || '').trim(),
-      difficulty: difficulty.trim()
+      difficulty: difficultyVal
     };
   }
 }

@@ -56,9 +56,23 @@ app.post('/api/quiz', (req, res) => {
         error: 'クイズマネージャーが初期化されていません'
       });
     }
+    const { difficulty, action, quizId } = req.body;
 
-    const { difficulty } = req.body;
-    
+    // クライアントが正解を要求する場合の処理
+    if (action === 'getAnswer') {
+      if (!quizId) {
+        return res.status(400).json({ success: false, error: 'quizIdが指定されていません' });
+      }
+
+      const answer = quizManager.getAnswer(String(quizId));
+      if (!answer) {
+        return res.status(404).json({ success: false, error: '指定されたクイズが見つかりません' });
+      }
+
+      return res.json({ success: true, answer });
+    }
+
+    // 通常のクイズ取得（難易度指定）
     if (!difficulty) {
       return res.status(400).json({
         success: false,
@@ -67,7 +81,7 @@ app.post('/api/quiz', (req, res) => {
     }
 
     const quiz = quizManager.getQuiz(difficulty);
-    
+
     if (!quiz) {
       return res.json({
         success: false,

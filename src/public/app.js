@@ -1,6 +1,21 @@
 // グローバル変数
 let currentQuiz = null;
 let currentQuizData = null;
+function playJajan() {
+  const audio = new Audio('quiz.mp3');
+  audio.volume = 0.7;
+  audio.play().catch(() => {
+    // Audio playback may require a user gesture or browser permission
+  });
+}
+
+function playPinPon() {
+  const audio = new Audio('answer.mp3');
+  audio.volume = 0.7;
+  audio.play().catch(() => {
+    // Audio playback may require a user gesture or browser permission
+  });
+}
 
 /**
  * ページ読み込み時の初期化
@@ -59,6 +74,13 @@ async function updateStats(stats) {
 
   // ボタンの有効/無効を切り替え
   updateDifficultyButtons(stats);
+  // すべてのクイズが無くなったら終了画面へ
+  const easy = Number(stats['易しい'] || 0);
+  const normal = Number(stats['普通'] || 0);
+  const hard = Number(stats['難しい'] || 0);
+  if (easy === 0 && normal === 0 && hard === 0) {
+    showScreen('finishScreen');
+  }
 }
 
 /**
@@ -124,6 +146,10 @@ async function selectDifficulty(difficulty) {
  */
 function displayQuiz(quiz) {
   currentQuiz = quiz;
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.style.display = '';
+
+    // Ensure options are laid out TL,TR,BL,BR by grid — generation order is correct
 
   // ヘッダー情報を更新
   document.getElementById('quizDifficulty').textContent = quiz.difficulty;
@@ -133,7 +159,6 @@ function displayQuiz(quiz) {
   document.getElementById('question').textContent = quiz.question;
 
   // 選択肢を生成
-  const optionsContainer = document.getElementById('optionsContainer');
   optionsContainer.innerHTML = '';
 
   quiz.options.forEach((option, index) => {
@@ -147,6 +172,9 @@ function displayQuiz(quiz) {
   // 回答セクションを非表示
   document.getElementById('answerSection').classList.add('hidden');
   document.getElementById('quizButtonSection').style.display = 'block';
+
+  // Play question sound
+  try { playJajan(); } catch (e) { /* ignore */ }
 
   // クイズ画面を表示
   showScreen('quizScreen');
@@ -210,8 +238,12 @@ function displayAnswer(correctAnswerNum, explanation) {
   document.getElementById('explanationText').textContent = explanation || '（解説はありません）';
 
   // 回答セクションを表示
-  document.getElementById('answerSection').classList.remove('hidden');
+  // Hide options and quiz buttons, show only answer+explanation
+  document.getElementById('optionsContainer').style.display = 'none';
   document.getElementById('quizButtonSection').style.display = 'none';
+  document.getElementById('answerSection').classList.remove('hidden');
+
+  try { playPinPon(); } catch (e) { /* ignore */ }
 }
 
 /**
@@ -224,7 +256,16 @@ async function nextQuestion() {
     const statsData = await statsResponse.json();
     await updateStats(statsData.stats);
 
-    // 難易度選択画面に戻る
+    // すべてのクイズが無くなっていれば終了画面へ、そうでなければ難易度選択へ
+    const stats = statsData.stats;
+    const easy = Number(stats['易しい'] || 0);
+    const normal = Number(stats['普通'] || 0);
+    const hard = Number(stats['難しい'] || 0);
+    if (easy === 0 && normal === 0 && hard === 0) {
+      showScreen('finishScreen');
+      return;
+    }
+
     showScreen('difficultyScreen');
   } catch (error) {
     showError(`エラーが発生しました: ${error.message}`);

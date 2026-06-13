@@ -15,8 +15,8 @@ body {
 }
 
 .container {
-  width: 100%;
-  max-width: 800px;
+  width: 95%;
+  max-width: 1000px;
   background: white;
   border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -34,7 +34,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
 }
 
 @keyframes fadeIn {
@@ -136,32 +136,38 @@ p {
 
 .question {
   margin-bottom: 30px;
-  text-align: left;
+  text-align: center;
   color: #333;
+  font-size: 1.4em;
+  line-height: 1.5;
 }
 
 .options {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
   margin-bottom: 30px;
+  min-height: 360px;
+  grid-auto-rows: 1fr;
 }
 
 .option-btn {
-  padding: 15px;
-  font-size: 1em;
+  padding: 18px;
+  font-size: 1.4em;
   border: 2px solid #ddd;
   border-radius: 8px;
   background: #f9f9f9;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .option-btn:hover {
-  border-color: #667eea;
-  background: #f0f4ff;
-  transform: translateX(5px);
+  /* Hover visual changes disabled per UI requirement */
+  transform: none;
 }
 
 .option-btn.selected {
@@ -319,7 +325,10 @@ button {
   }
 
   .option-btn {
-    padding: 12px;
-    font-size: 0.95em;
+    padding: 14px;
+    font-size: 1.15em;
+    height: auto;
+    display: block;
+    align-items: stretch;
   }
 }
