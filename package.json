@@ -1,0 +1,22 @@
+{
+  "name": "four-selection-quiz",
+  "version": "1.0.0",
+  "description": "Web application for multiple-choice quizzes loaded from Excel files",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "keywords": [
+    "quiz",
+    "four-selection",
+    "excel"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {}
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四択クイズ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 初期化中画面 -->
+    <div id="loadingScreen" class="screen active">
+      <h1>四択クイズ</h1>
+      <p>クイズを読み込んでいます...</p>
+    </div>
+
+    <!-- エラー画面 -->
+    <div id="errorScreen" class="screen">
+      <h1>エラーが発生しました</h1>
+      <p id="errorMessage"></p>
+      <button onclick="location.reload()">リロード</button>
+    </div>
+
+    <!-- 難易度選択画面 -->
+    <div id="difficultyScreen" class="screen">
+      <h1>四択クイズ</h1>
+      <p>難易度を選んでください</p>
+      <div class="difficulty-buttons">
+        <button id="easyBtn" class="difficulty-btn" onclick="selectDifficulty('易しい')">易しい</button>
+        <button id="normalBtn" class="difficulty-btn" onclick="selectDifficulty('普通')">普通</button>
+        <button id="hardBtn" class="difficulty-btn" onclick="selectDifficulty('難しい')">難しい</button>
+      </div>
+      <div class="stats">
+        <p>残りクイズ数: 易しい <span id="easyCount">0</span> 問、普通 <span id="normalCount">0</span> 問、難しい <span id="hardCount">0</span> 問</p>
+      </div>
+    </div>
+
+    <!-- クイズ表示画面 -->
+    <div id="quizScreen" class="screen">
+      <div class="quiz-header">
+        <span class="difficulty" id="quizDifficulty"></span>
+        <span id="quizId"></span>
+      </div>
+      
+      <h2 id="question" class="question"></h2>
+
+      <div class="options" id="optionsContainer">
+        <!-- オプションボタンがここに動的に生成されます -->
+      </div>
+
+      <div id="answerSection" class="answer-section hidden">
+        <div class="correct-answer">
+          <p>正解: <span id="correctAnswerDisplay"></span></p>
+        </div>
+        <div class="explanation">
+          <p><strong>解説:</strong></p>
+          <p id="explanationText"></p>
+        </div>
+        <button class="btn-next" onclick="nextQuestion()">次へ</button>
+      </div>
+
+      <div id="quizButtonSection" class="quiz-button-section">
+        <button class="btn-check" onclick="showAnswer()">正解は？</button>
+      </div>
+    </div>
+
+    <!-- 終了画面 -->
+    <div id="finishScreen" class="screen">
+      <h1>クイズ終了</h1>
+      <p>すべてのクイズが終了しました。</p>
+      <p>お疲れ様でした！</p>
+      <button onclick="location.reload()">もう一度やる</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
