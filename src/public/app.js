@@ -18,12 +18,29 @@ function playPinPon() {
 }
 
 /**
+ * 指定時間でフェッチをタイムアウトさせる
+ */
+async function fetchWithTimeout(url, options = {}, timeout = 8000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    return response;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+/**
  * ページ読み込み時の初期化
  */
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     // クイズマネージャーを初期化
-    const response = await fetch('/api/initialize');
+    const response = await fetchWithTimeout('/api/initialize', {}, 8000);
     const data = await response.json();
 
     if (!data.success) {
@@ -37,7 +54,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 難易度選択画面を表示
     showScreen('difficultyScreen');
   } catch (error) {
-    showError(`エラーが発生しました: ${error.message}`);
+    if (error.name === 'AbortError') {
+      showError('サーバーへの接続がタイムアウトしました。サーバーが起動し、同じネットワークに接続されていることを確認してください。');
+    } else {
+      showError(`エラーが発生しました: ${error.message}`);
+    }
   }
 });
 

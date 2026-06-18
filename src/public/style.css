@@ -388,3 +388,143 @@ button {
     align-items: stretch;
   }
 }
+
+@media (orientation: landscape) and (max-height: 520px) {
+  html,
+  body {
+    min-height: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: none;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100vh;
+    height: 100vh;
+  }
+
+  .screen.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6px;
+    min-height: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .difficulty-buttons {
+    flex-direction: row;
+    gap: 6px;
+    margin: 6px 0;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .difficulty-btn {
+    min-width: auto;
+    flex: 1;
+    min-width: 60px;
+    padding: 8px;
+    font-size: 1em;
+  }
+
+  .quiz-header {
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    flex-shrink: 0;
+  }
+
+  h1 {
+    font-size: 1.5em;
+    margin-bottom: 3px;
+  }
+
+  h2 {
+    font-size: 1.1em;
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .question {
+    font-size: 1.2em;
+    margin-bottom: 6px;
+    line-height: 1.5;
+    flex-shrink: 0;
+  }
+
+  .options {
+    gap: 6px;
+    margin-bottom: 6px;
+    min-height: auto;
+    flex: 1;
+    grid-auto-rows: 1fr;
+    align-content: stretch;
+  }
+
+  .option-btn {
+    padding: 10px;
+    font-size: 1em;
+    min-height: 0;
+  }
+
+  .option-number {
+    font-size: 1.6em;
+    margin-bottom: 4px;
+  }
+
+  .option-text {
+    font-size: 1em;
+    line-height: 1.4;
+  }
+
+  .answer-section {
+    margin-top: 6px;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+
+  .correct-answer {
+    margin-bottom: 6px;
+    padding: 8px;
+  }
+
+  .correct-answer p {
+    font-size: 1.1em;
+  }
+
+  .explanation {
+    padding: 8px;
+    max-height: 100px;
+    overflow-y: auto;
+  }
+
+  .explanation p {
+    font-size: 0.95em;
+    margin-bottom: 4px;
+  }
+
+  .btn-check,
+  .btn-next {
+    padding: 10px;
+    font-size: 1em;
+    flex-shrink: 0;
+  }
+
+  .quiz-button-section {
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+}
