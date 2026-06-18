@@ -190,7 +190,19 @@ function displayQuiz(quiz) {
   quiz.options.forEach((option, index) => {
     const button = document.createElement('button');
     button.className = 'option-btn';
-    button.textContent = `${index + 1}. ${option}`;
+
+    // 番号を上、テキストを下に表示（ピリオドは付けない）
+    const num = document.createElement('div');
+    num.className = 'option-number';
+    num.textContent = String(index + 1);
+
+    const txt = document.createElement('div');
+    txt.className = 'option-text';
+    txt.textContent = option;
+
+    button.appendChild(num);
+    button.appendChild(txt);
+
     button.onclick = () => selectOption(index + 1, button);
     optionsContainer.appendChild(button);
   });
@@ -259,8 +271,10 @@ async function showAnswer() {
  * 正解と解説を表示
  */
 function displayAnswer(correctAnswerNum, explanation) {
-  const correctText = `${correctAnswerNum}. ${currentQuiz.options[correctAnswerNum - 1]}`;
-  document.getElementById('correctAnswerDisplay').textContent = correctText;
+  const correctOptionText = currentQuiz.options[correctAnswerNum - 1];
+  // 表示要素に番号とテキストを分けて挿入（ピリオドなし）
+  document.getElementById('correctAnswerDisplay').innerHTML =
+    `<div class="answer-number">${correctAnswerNum}</div><div class="answer-text">${escapeHtml(correctOptionText)}</div>`;
   document.getElementById('explanationText').textContent = explanation || '（解説はありません）';
 
   // 回答セクションを表示
@@ -270,6 +284,17 @@ function displayAnswer(correctAnswerNum, explanation) {
   document.getElementById('answerSection').classList.remove('hidden');
 
   try { playPinPon(); } catch (e) { /* ignore */ }
+}
+
+// 単純なエスケープ（HTML挿入防止）
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 /**
