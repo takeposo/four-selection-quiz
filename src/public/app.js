@@ -84,6 +84,32 @@ async function updateStats(stats) {
 }
 
 /**
+ * サーバー側のキャッシュをクリアして初期化する（リセットボタン用）
+ */
+async function resetQuizzes() {
+  try {
+    // reset=true を付与してサーバー側の永続状態もクリア
+    const response = await fetch('/api/initialize?reset=true');
+    const data = await response.json();
+
+    if (!data.success) {
+      showError(data.error || '初期化に失敗しました');
+      return;
+    }
+
+    // クライアント側の状態クリア
+    currentQuiz = null;
+    currentQuizData = null;
+
+    // 統計を更新して難易度選択画面に戻す
+    await updateStats(data.stats);
+    showScreen('difficultyScreen');
+  } catch (error) {
+    showError(`エラーが発生しました: ${error.message}`);
+  }
+}
+
+/**
  * 難易度ボタンの有効/無効を更新
  */
 function updateDifficultyButtons(stats) {

@@ -1,4 +1,6 @@
 const QuizLoader = require('./quizLoader');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * クイズの管理と配信を行う
@@ -7,9 +9,12 @@ class QuizManager {
   /**
    * @param {string} excelPath - Excelファイルのパス
    */
-  constructor(excelPath) {
+  constructor(excelPath, stateFilePath) {
     const loader = new QuizLoader(excelPath);
     const allQuizzes = loader.load();
+
+    // 状態保存ファイルパス（デフォルトはプロジェクトルートの quiz_state.json）
+    this.stateFilePath = stateFilePath || path.join(process.cwd(), 'quiz_state.json');
 
     // 難易度別にクイズをグループ化
     this.quizzesByDifficulty = {
@@ -32,6 +37,9 @@ class QuizManager {
         this.quizzesByDifficulty[difficulty]
       );
     }
+
+    // クイズの分類が終わった後で状態ファイルから復元する
+    this._loadState();
   }
 
   /**
@@ -68,6 +76,14 @@ class QuizManager {
         // このクイズを表示済みにマーク
         this.shownQuizIds.add(quiz.id);
 
+        // 状態を保存
+        try {
+          this._saveState();
+        } catch (e) {
+          // ログにとどめて処理を継続
+          console.warn('状態の保存に失敗しました:', e.message);
+        }
+
         // クライアントに返すデータ（正解は含めない）
         return {
           id: quiz.id,
@@ -79,6 +95,63 @@ class QuizManager {
     }
 
     return null;
+  }
+
+  /**
+   * shownQuizIds を状態ファイルに保存する
+   * @private
+   */
+  _saveState() {
+    const state = {
+      shownQuizIds: Array.from(this.shownQuizIds)
+    };
+
+    fs.writeFileSync(this.stateFilePath, JSON.stringify(state, null, 2), 'utf8');
+  }
+
+  /**
+   * 状態ファイルから shownQuizIds を復元する
+   * @private
+   */
+  _loadState() {
+    try {
+      if (fs.existsSync(this.stateFilePath)) {
+        const raw = fs.readFileSync(this.stateFilePath, 'utf8');
+        const obj = JSON.parse(raw || '{}');
+        if (obj && Array.isArray(obj.shownQuizIds)) {
+          // 存在するクイズIDのみを復元する
+          const validIds = new Set();
+          for (const difficulty in this.quizzesByDifficulty) {
+            for (const q of this.quizzesByDifficulty[difficulty]) {
+              validIds.add(q.id);
+            }
+          }
+
+          for (const id of obj.shownQuizIds) {
+            if (validIds.has(id)) {
+              this.shownQuizIds.add(id);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('状態の読み込みに失敗しました:', e.message);
+    }
+  }
+
+  /**
+   * shownQuizIds をクリアして状態ファイルを削除/更新する
+   */
+  resetState() {
+    this.shownQuizIds.clear();
+    try {
+      if (fs.existsSync(this.stateFilePath)) {
+        fs.unlinkSync(this.stateFilePath);
+      }
+    } catch (e) {
+      // 削除に失敗しても処理は継続
+      console.warn('状態ファイルの削除に失敗しました:', e.message);
+    }
   }
 
   /**

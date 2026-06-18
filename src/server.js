@@ -11,12 +11,25 @@ app.use(express.json());
 
 // グローバルなクイズマネージャーインスタンス
 let quizManager = null;
+const fs = require('fs');
 
 // クイズデータを初期化するエンドポイント
 app.get('/api/initialize', (req, res) => {
   try {
     const excelPath = path.join(process.cwd(), 'quizzes.xlsx');
-    quizManager = new QuizManager(excelPath);
+    // 状態ファイルパス
+    const statePath = path.join(process.cwd(), 'quiz_state.json');
+
+    // クエリパラメータでリセットを指定された場合は状態ファイルを削除
+    if (req.query && req.query.reset === 'true') {
+      try {
+        if (fs.existsSync(statePath)) fs.unlinkSync(statePath);
+      } catch (e) {
+        console.warn('state file remove failed:', e.message);
+      }
+    }
+
+    quizManager = new QuizManager(excelPath, statePath);
     
     const stats = quizManager.getStats();
     res.json({

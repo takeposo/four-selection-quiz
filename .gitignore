@@ -20,6 +20,9 @@ yarn.lock
 # Quiz data
 quizzes*.xlsx
 
+# Quiz state
+quiz_state.json
+
 # Music data
 *.mp3
 

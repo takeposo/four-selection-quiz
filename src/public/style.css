@@ -138,8 +138,10 @@ p {
   margin-bottom: 30px;
   text-align: center;
   color: #333;
-  font-size: 1.4em;
-  line-height: 1.5;
+  font-size: 2em;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .options {
@@ -152,8 +154,8 @@ p {
 }
 
 .option-btn {
-  padding: 18px;
-  font-size: 1.4em;
+  padding: 20px;
+  font-size: 1.6em;
   border: 2px solid #ddd;
   border-radius: 8px;
   background: #f9f9f9;
@@ -163,6 +165,9 @@ p {
   height: 100%;
   display: flex;
   align-items: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .option-btn:hover {
@@ -202,7 +207,9 @@ p {
   font-weight: bold;
   margin: 0;
   text-align: center;
-  font-size: 1.2em;
+  font-size: 1.4em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .explanation {
@@ -225,6 +232,20 @@ p {
   margin-bottom: 0;
 }
 
+#correctAnswerDisplay {
+  display: inline-block;
+  font-size: 1.8em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#explanationText {
+  font-size: 1.3em;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.6;
+}
+
 /* ボタン */
 button {
   padding: 12px 30px;
@@ -238,10 +259,10 @@ button {
 
 .btn-check {
   width: 100%;
-  padding: 15px;
+  padding: 18px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-size: 1.1em;
+  font-size: 1.3em;
 }
 
 .btn-check:hover {
