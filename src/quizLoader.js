@@ -78,11 +78,12 @@ class QuizLoader {
       throw new Error('必須フィールドが不足しています');
     }
 
-    // 正解番号の検証
-    const correctNum = parseInt(correctAnswer);
+    // 正解番号を全角->半角に正規化して検証
+    const correctNum = parseInt(this._normalizeFullWidthDigits(correctAnswer));
     if (isNaN(correctNum) || correctNum < 1 || correctNum > 4) {
       throw new Error(`正解番号が無効です（1-4の数値である必要があります: ${correctAnswer}）`);
     }
+
     // 難易度が空の場合は '普通' をデフォルトとする
     const validDifficulties = ['易しい', '普通', '難しい'];
     const difficultyVal = String(difficulty || '普通').trim();
@@ -103,6 +104,17 @@ class QuizLoader {
       explanation: String(explanation || '').trim(),
       difficulty: difficultyVal
     };
+  }
+
+  /**
+   * 全角数字を半角数字に変換する
+   * @private
+   * @param {string|number} value
+   * @returns {string}
+   */
+  _normalizeFullWidthDigits(value) {
+    return String(value)
+      .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
   }
 }
 
