@@ -37,7 +37,20 @@ async function fetchWithTimeout(url, options = {}, timeout = 8000) {
 /**
  * ページ読み込み時の初期化
  */
+function setAppViewportHeight() {
+  const height = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const vh = height * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
+  setAppViewportHeight();
+  window.addEventListener('resize', () => setTimeout(setAppViewportHeight, 100));
+  window.addEventListener('orientationchange', () => setTimeout(setAppViewportHeight, 100));
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => setTimeout(setAppViewportHeight, 100));
+  }
+
   try {
     // クイズマネージャーを初期化
     const response = await fetchWithTimeout('/api/initialize', {}, 8000);

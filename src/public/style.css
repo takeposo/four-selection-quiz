@@ -4,14 +4,25 @@
   box-sizing: border-box;
 }
 
+:root {
+  --vh: 1vh;
+}
+
+html,
+body {
+  height: 100%;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
+  min-height: calc(var(--vh, 1vh) * 100);
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden;
 }
 
 .container {
@@ -21,20 +32,143 @@ body {
   border-radius: 10px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: calc(var(--vh, 1vh) * 100 - 40px);
 }
 
 .screen {
   display: none;
   padding: 40px;
-  min-height: 500px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
   animation: fadeIn 0.3s ease-in;
 }
 
 .screen.active {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: stretch;
+}
+
+@media (orientation: landscape) {
+  html,
+  body {
+    height: calc(var(--vh, 1vh) * 100);
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    padding: 10px 10px;
+    min-height: calc(var(--vh, 1vh) * 100);
+    max-height: calc(var(--vh, 1vh) * 100);
+    overflow: auto;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    min-height: 0;
+    flex: 1;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+  }
+
+  .screen {
+    padding: 18px 14px;
+    overflow-y: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: 1.2em;
+    margin-bottom: 14px;
+  }
+
+  .quiz-header {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+
+  .question {
+    margin-bottom: 16px;
+    font-size: 1.6em;
+    line-height: 1.5;
+  }
+
+  .options {
+    gap: 12px;
+    margin-bottom: 18px;
+    grid-auto-rows: minmax(0, auto);
+  }
+
+  .option-btn {
+    padding: 12px;
+    font-size: 3.2em;
+    min-height: 0;
+  }
+
+  .option-number {
+    font-size: 2.8em;
+    margin-bottom: 6px;
+  }
+
+  .option-text {
+    font-size: 1.5em;
+    line-height: 1.3;
+  }
+
+  .answer-section {
+    margin-top: 16px;
+    padding: 16px;
+  }
+
+  .correct-answer {
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+
+  .correct-answer p {
+    font-size: 1.2em;
+  }
+
+  .explanation {
+    padding: 12px;
+  }
+
+  .explanation p {
+    font-size: 1em;
+  }
+
+  .btn-check,
+  .btn-next {
+    padding: 12px;
+    font-size: 1.05em;
+  }
+
+  .quiz-button-section {
+    margin-top: 12px;
+  }
 }
 
 @keyframes fadeIn {
@@ -149,53 +283,29 @@ p {
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-bottom: 30px;
-  min-height: 360px;
+  min-height: auto;
   grid-auto-rows: 1fr;
 }
 
 .option-btn {
   padding: 20px;
-  font-size: 1.6em;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  background: #f9f9f9;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: normal;
-}
-
-.option-btn:hover {
-  /* Hover visual changes disabled per UI requirement */
-  transform: none;
-}
-
-.option-btn.selected {
+  font-size: 4.2em;
   border-color: #667eea;
   background: #e8ecff;
   font-weight: bold;
 }
 
 .option-number {
-  font-size: 2.2em;
-  font-weight: 800;
+  font-size: 4.4em;
+  font-weight: 900;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
 .option-text {
-  font-size: 1.1em;
-  line-height: 1.4;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  font-size: 2.2em;
+  line-height: 1.2;
 }
 
 /* 回答セクション */
@@ -260,10 +370,10 @@ p {
 }
 
 #explanationText {
-  font-size: 1.3em;
+  font-size: 1.05em;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 #correctAnswerDisplay .answer-number {
@@ -403,6 +513,7 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 0;
   }
 
   .container {
@@ -417,11 +528,20 @@ button {
   .screen.active {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 6px;
+    justify-content: flex-start;
+    padding: 4px;
     min-height: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
+  }
+
+  .quiz-button-section {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    z-index: 1;
+    margin-top: 4px;
+    padding-top: 4px;
   }
 
   .difficulty-buttons {
@@ -448,18 +568,89 @@ button {
   }
 
   h1 {
-    font-size: 1.5em;
-    margin-bottom: 3px;
+    font-size: 1.4em;
+    margin-bottom: 2px;
   }
 
   h2 {
-    font-size: 1.1em;
+    font-size: 1em;
     margin-bottom: 4px;
     line-height: 1.4;
   }
 
   .question {
-    font-size: 1.2em;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+
+  .options {
+    gap: 4px;
+    margin-bottom: 4px;
+    min-height: auto;
+    flex: 1;
+    grid-auto-rows: minmax(0, auto);
+    align-content: stretch;
+  }
+
+  .option-btn {
+    padding: 8px;
+    font-size: 0.95em;
+    min-height: 0;
+  }
+
+  .option-number {
+    font-size: 1.4em;
+    margin-bottom: 4px;
+  }
+
+  .option-text {
+    font-size: 0.95em;
+    line-height: 1.3;
+  }
+
+  .answer-section {
+    margin-top: 4px;
+    padding: 8px;
+    flex-shrink: 0;
+  }
+
+  .correct-answer {
+    margin-bottom: 4px;
+    padding: 8px;
+  }
+
+  .correct-answer p {
+    font-size: 1.05em;
+  }
+
+  .explanation {
+    padding: 8px;
+    max-height: 90px;
+    overflow-y: auto;
+  }
+
+  .explanation p {
+    font-size: 0.9em;
+    margin-bottom: 4px;
+  }
+
+  .btn-check,
+  .btn-next {
+    padding: 10px;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+
+  .quiz-button-section {
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+}
+
+  .question {
+    font-size: 1.6em;
     margin-bottom: 6px;
     line-height: 1.5;
     flex-shrink: 0;
@@ -481,12 +672,12 @@ button {
   }
 
   .option-number {
-    font-size: 1.6em;
+    font-size: 2em;
     margin-bottom: 4px;
   }
 
   .option-text {
-    font-size: 1em;
+    font-size: 1.8em;
     line-height: 1.4;
   }
 
