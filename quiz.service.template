@@ -1,0 +1,12 @@
+[Unit]
+Description=Quiz server
+After=network-online.target
+
+[Service]
+Restart=on-success
+WorkingDirectory=/home/quizadmin/four-selection-quiz/
+ExecStart=/usr/bin/yarn start
+
+[Install]
+WantedBy=multi-user.target
+
