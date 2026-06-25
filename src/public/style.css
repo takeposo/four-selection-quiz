@@ -55,9 +55,11 @@ body {
 }
 
 @media (orientation: landscape) {
+
   html,
   body {
-    height: calc(var(--vh, 1vh) * 100);
+    height: 100dvh;
+    min-height: 100dvh;
     margin: 0;
     padding: 0;
   }
@@ -68,8 +70,8 @@ body {
     justify-content: flex-start;
     align-items: stretch;
     padding: 10px 10px;
-    min-height: calc(var(--vh, 1vh) * 100);
-    max-height: calc(var(--vh, 1vh) * 100);
+    min-height: 100dvh;
+    max-height: 100dvh;
     overflow: auto;
   }
 
@@ -175,6 +177,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -500,6 +503,7 @@ button {
 }
 
 @media (orientation: landscape) and (max-height: 520px) {
+
   html,
   body {
     min-height: 100%;
@@ -521,8 +525,8 @@ button {
     max-width: none;
     border-radius: 0;
     box-shadow: none;
-    min-height: 100vh;
-    height: 100vh;
+    min-height: 100dvh;
+    height: 100dvh;
   }
 
   .screen.active {
@@ -649,73 +653,72 @@ button {
   }
 }
 
-  .question {
-    font-size: 1.6em;
-    margin-bottom: 6px;
-    line-height: 1.5;
-    flex-shrink: 0;
-  }
+.question {
+  font-size: 1.6em;
+  margin-bottom: 6px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
 
-  .options {
-    gap: 6px;
-    margin-bottom: 6px;
-    min-height: auto;
-    flex: 1;
-    grid-auto-rows: 1fr;
-    align-content: stretch;
-  }
+.options {
+  gap: 6px;
+  margin-bottom: 6px;
+  min-height: auto;
+  flex: 1;
+  grid-auto-rows: 1fr;
+  align-content: stretch;
+}
 
-  .option-btn {
-    padding: 10px;
-    font-size: 1em;
-    min-height: 0;
-  }
+.option-btn {
+  padding: 10px;
+  font-size: 1em;
+  min-height: 0;
+}
 
-  .option-number {
-    font-size: 2em;
-    margin-bottom: 4px;
-  }
+.option-number {
+  font-size: 2em;
+  margin-bottom: 4px;
+}
 
-  .option-text {
-    font-size: 1.8em;
-    line-height: 1.4;
-  }
+.option-text {
+  font-size: 1.8em;
+  line-height: 1.4;
+}
 
-  .answer-section {
-    margin-top: 6px;
-    padding: 8px;
-    flex-shrink: 0;
-  }
+.answer-section {
+  margin-top: 6px;
+  padding: 8px;
+  flex-shrink: 0;
+}
 
-  .correct-answer {
-    margin-bottom: 6px;
-    padding: 8px;
-  }
+.correct-answer {
+  margin-bottom: 6px;
+  padding: 8px;
+}
 
-  .correct-answer p {
-    font-size: 1.1em;
-  }
+.correct-answer p {
+  font-size: 1.1em;
+}
 
-  .explanation {
-    padding: 8px;
-    max-height: 100px;
-    overflow-y: auto;
-  }
+.explanation {
+  padding: 8px;
+  max-height: 100px;
+  overflow-y: auto;
+}
 
-  .explanation p {
-    font-size: 0.95em;
-    margin-bottom: 4px;
-  }
+.explanation p {
+  font-size: 0.95em;
+  margin-bottom: 4px;
+}
 
-  .btn-check,
-  .btn-next {
-    padding: 10px;
-    font-size: 1em;
-    flex-shrink: 0;
-  }
+.btn-check,
+.btn-next {
+  padding: 10px;
+  font-size: 1em;
+  flex-shrink: 0;
+}
 
-  .quiz-button-section {
-    margin-top: 6px;
-    flex-shrink: 0;
-  }
+.quiz-button-section {
+  margin-top: 6px;
+  flex-shrink: 0;
 }
