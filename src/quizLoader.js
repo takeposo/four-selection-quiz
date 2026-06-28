@@ -1,6 +1,10 @@
 const XLSX = require('xlsx');
 const fs = require('fs');
 
+function isTimeLikeValue(value) {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1;
+}
+
 /**
  * Excelファイルからクイズデータを読み込む
  */
@@ -30,7 +34,7 @@ class QuizLoader {
       }
 
       const worksheet = workbook.Sheets[sheetName];
-      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: true, defval: '' });
 
       const quizzes = [];
 
@@ -44,7 +48,7 @@ class QuizLoader {
         }
 
         try {
-          const quiz = this._parseRow(row, i + 1);
+          const quiz = this._parseRow(row, i, worksheet);
           if (quiz) {
             quizzes.push(quiz);
           }
@@ -70,7 +74,7 @@ class QuizLoader {
    * @param {number} rowIndex - 行番号（エラーメッセージ用）
    * @returns {Object|null} パースされたクイズオブジェクト
    */
-  _parseRow(row, rowIndex) {
+  _parseRow(row, rowIndex, worksheet) {
     const [id, question, option1, option2, option3, option4, correctAnswer, explanation, difficulty] = row;
 
     // 必須フィールドの検証（難易度は空なら後でデフォルトを入れる）
@@ -93,15 +97,15 @@ class QuizLoader {
 
     return {
       id: String(id).trim(),
-      question: String(question).trim(),
+      question: this._normalizeCellValue(question, worksheet, rowIndex, 1),
       options: [
-        String(option1).trim(),
-        String(option2).trim(),
-        String(option3).trim(),
-        String(option4).trim()
+        this._normalizeCellValue(option1, worksheet, rowIndex, 2),
+        this._normalizeCellValue(option2, worksheet, rowIndex, 3),
+        this._normalizeCellValue(option3, worksheet, rowIndex, 4),
+        this._normalizeCellValue(option4, worksheet, rowIndex, 5)
       ],
       correctAnswer: correctNum,
-      explanation: String(explanation || '').trim(),
+      explanation: this._normalizeCellValue(explanation, worksheet, rowIndex, 7),
       difficulty: difficultyVal
     };
   }
@@ -115,6 +119,68 @@ class QuizLoader {
   _normalizeFullWidthDigits(value) {
     return String(value)
       .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+  }
+
+  /**
+   * 選択肢の値を表示用テキストに正規化する
+   * @private
+   * @param {any} value
+   * @returns {string}
+   */
+  _normalizeCellValue(rawValue, worksheet, rowIndex, colIndex) {
+    const cell = this._getWorksheetCell(worksheet, rowIndex, colIndex);
+    const formattedText = this._formatCellText(cell);
+    if (formattedText !== null) {
+      return formattedText;
+    }
+    return this._normalizeValue(rawValue);
+  }
+
+  _getWorksheetCell(worksheet, rowIndex, colIndex) {
+    const address = XLSX.utils.encode_cell({ c: colIndex, r: rowIndex });
+    return worksheet[address] || null;
+  }
+
+  _formatCellText(cell) {
+    if (!cell) {
+      return null;
+    }
+
+    if (cell.w !== undefined && cell.w !== null && cell.w !== '') {
+      return String(cell.w);
+    }
+
+    if (cell.t === 'n' && cell.z) {
+      try {
+        return String(XLSX.SSF.format(cell.z, cell.v));
+      } catch (_) {
+        // fall through
+      }
+    }
+
+    return null;
+  }
+
+  _normalizeValue(value) {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      if (isTimeLikeValue(value)) {
+        const totalMinutes = Math.round(value * 24 * 60);
+        const hours = String(Math.floor(totalMinutes / 60));
+        const minutes = String(totalMinutes % 60).padStart(2, '0');
+        return `${hours}:${minutes}`;
+      }
+      return String(value);
+    }
+
+    if (typeof value === 'string') {
+      return value.trim();
+    }
+
+    return String(value).trim();
   }
 }
 

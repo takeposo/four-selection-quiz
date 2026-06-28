@@ -60,6 +60,32 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
+// クイズ一覧を取得
+app.get('/api/quizzes', (req, res) => {
+  try {
+    if (!quizManager) {
+      return res.status(400).json({
+        success: false,
+        error: 'クイズマネージャーが初期化されていません'
+      });
+    }
+
+    const difficulty = req.query.difficulty || null;
+    const quizzes = quizManager.getRemainingQuizzes(difficulty);
+
+    res.json({
+      success: true,
+      quizzes
+    });
+  } catch (error) {
+    console.error('クイズ一覧取得エラー:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // 難易度を指定してクイズを取得
 app.post('/api/quiz', (req, res) => {
   try {
@@ -83,6 +109,19 @@ app.post('/api/quiz', (req, res) => {
       }
 
       return res.json({ success: true, answer });
+    }
+
+    if (action === 'getById') {
+      if (!quizId) {
+        return res.status(400).json({ success: false, error: 'quizIdが指定されていません' });
+      }
+
+      const quiz = quizManager.getQuizById(String(quizId));
+      if (!quiz) {
+        return res.json({ success: false, error: '指定されたクイズが見つかりません' });
+      }
+
+      return res.json({ success: true, quiz });
     }
 
     // 通常のクイズ取得（難易度指定）

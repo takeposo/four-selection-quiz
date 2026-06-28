@@ -61,6 +61,57 @@ class QuizManager {
   }
 
   /**
+   * 未表示のクイズ一覧を取得
+   * @param {string|null} difficulty - 難易度（省略時は全件）
+   * @returns {Array} クイズオブジェクト配列
+   */
+  getRemainingQuizzes(difficulty = null) {
+    const source = difficulty
+      ? this.quizzesByDifficulty[difficulty] || []
+      : Object.values(this.quizzesByDifficulty).flat();
+
+    return source
+      .filter(quiz => !this.shownQuizIds.has(quiz.id))
+      .map(quiz => ({
+        id: quiz.id,
+        question: quiz.question,
+        options: quiz.options,
+        difficulty: quiz.difficulty
+      }))
+      .sort((a, b) => {
+        const idA = Number(a.id);
+        const idB = Number(b.id);
+        if (!Number.isNaN(idA) && !Number.isNaN(idB)) {
+          return idA - idB;
+        }
+        return String(a.id).localeCompare(String(b.id), 'ja', { numeric: true });
+      });
+  }
+
+  /**
+   * 指定されたIDの未表示クイズを取得
+   * @param {string} quizId - クイズID
+   * @returns {Object|null} クイズオブジェクトまたはnull
+   */
+  getQuizById(quizId) {
+    const quiz = this.getRemainingQuizzes().find(item => item.id === quizId);
+    if (!quiz) {
+      return null;
+    }
+
+    if (!this.shownQuizIds.has(quizId)) {
+      this.shownQuizIds.add(quizId);
+      try {
+        this._saveState();
+      } catch (e) {
+        console.warn('状態の保存に失敗しました:', e.message);
+      }
+    }
+
+    return quiz;
+  }
+
+  /**
    * 指定された難易度の次のクイズを取得
    * @param {string} difficulty - 難易度（易しい、普通、難しい）
    * @returns {Object|null} クイズオブジェクトまたはnull

@@ -1,6 +1,13 @@
 // グローバル変数
 let currentQuiz = null;
 let currentQuizData = null;
+let quizListMode = 'all';
+let quizListDifficulty = '易しい';
+let quizListPage = 0;
+let quizListItems = [];
+let selectedQuizId = null;
+const quizListPageSize = 10;
+
 function playJajan() {
   const audio = new Audio('quiz.mp3');
   audio.volume = 0.7;
@@ -96,6 +103,148 @@ function showScreen(screenId) {
 function showError(message) {
   document.getElementById('errorMessage').textContent = message;
   showScreen('errorScreen');
+}
+
+function openQuizListModal() {
+  quizListMode = document.getElementById('quizListModeSelect').value || 'all';
+  quizListDifficulty = document.getElementById('quizListDifficultySelect').value || '易しい';
+  quizListPage = 0;
+  selectedQuizId = null;
+  document.getElementById('quizListModal').classList.remove('hidden');
+  setQuizListModeVisibility();
+  loadQuizListItems();
+}
+
+function closeQuizListModal() {
+  document.getElementById('quizListModal').classList.add('hidden');
+}
+
+function onQuizListModeChange() {
+  quizListMode = document.getElementById('quizListModeSelect').value || 'all';
+  quizListPage = 0;
+  selectedQuizId = null;
+  setQuizListModeVisibility();
+  loadQuizListItems();
+}
+
+function onQuizListDifficultyChange() {
+  quizListDifficulty = document.getElementById('quizListDifficultySelect').value || '易しい';
+  quizListPage = 0;
+  selectedQuizId = null;
+  loadQuizListItems();
+}
+
+function setQuizListModeVisibility() {
+  const difficultyField = document.getElementById('quizListDifficultyField');
+  difficultyField.classList.toggle('hidden', quizListMode !== 'difficulty');
+}
+
+async function loadQuizListItems() {
+  const container = document.getElementById('quizListContainer');
+  container.innerHTML = '<p>読み込み中...</p>';
+
+  try {
+    const query = quizListMode === 'difficulty'
+      ? `?difficulty=${encodeURIComponent(quizListDifficulty)}`
+      : '';
+    const response = await fetchWithTimeout(`/api/quizzes${query}`, {}, 8000);
+    const data = await response.json();
+
+    if (!data.success) {
+      container.innerHTML = '<p>一覧を読み込めませんでした。</p>';
+      return;
+    }
+
+    quizListItems = Array.isArray(data.quizzes) ? data.quizzes : [];
+    quizListPage = Math.max(0, Math.min(quizListPage, Math.max(0, Math.ceil(quizListItems.length / quizListPageSize) - 1)));
+    renderQuizList();
+  } catch (error) {
+    container.innerHTML = '<p>一覧の取得に失敗しました。</p>';
+  }
+}
+
+function renderQuizList() {
+  const container = document.getElementById('quizListContainer');
+  const pageInfo = document.getElementById('quizListPageInfo');
+  const prevBtn = document.getElementById('quizListPrevBtn');
+  const nextBtn = document.getElementById('quizListNextBtn');
+  const confirmBtn = document.getElementById('confirmQuizListBtn');
+
+  if (!quizListItems.length) {
+    container.innerHTML = '<p>表示できる問題がありません。</p>';
+    pageInfo.textContent = '0 / 0';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    confirmBtn.disabled = true;
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(quizListItems.length / quizListPageSize));
+  quizListPage = Math.max(0, Math.min(quizListPage, totalPages - 1));
+  const start = quizListPage * quizListPageSize;
+  const pageItems = quizListItems.slice(start, start + quizListPageSize);
+
+  container.innerHTML = '';
+  pageItems.forEach(item => {
+    const label = document.createElement('label');
+    label.className = 'quiz-list-item';
+    label.innerHTML = `
+      <input type="radio" name="quizListChoice" value="${escapeHtml(item.id)}" ${selectedQuizId === item.id ? 'checked' : ''} onchange="selectQuizListItem('${escapeHtml(item.id)}')">
+      <span class="quiz-list-item-content">
+        <span class="quiz-list-item-question">${escapeHtml(item.question)}</span>
+        <span class="quiz-list-item-meta">難易度: ${escapeHtml(item.difficulty)} / ID: ${escapeHtml(item.id)}</span>
+      </span>
+    `;
+    container.appendChild(label);
+  });
+
+  pageInfo.textContent = `${quizListPage + 1} / ${totalPages}`;
+  prevBtn.disabled = quizListPage === 0;
+  nextBtn.disabled = quizListPage >= totalPages - 1;
+  confirmBtn.disabled = !selectedQuizId;
+}
+
+function selectQuizListItem(quizId) {
+  selectedQuizId = quizId;
+  document.getElementById('confirmQuizListBtn').disabled = !selectedQuizId;
+}
+
+function changeQuizListPage(delta) {
+  const totalPages = Math.max(1, Math.ceil(quizListItems.length / quizListPageSize));
+  quizListPage = Math.max(0, Math.min(quizListPage + delta, totalPages - 1));
+  renderQuizList();
+}
+
+async function selectQuizFromList() {
+  if (!selectedQuizId) {
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/quiz', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'getById', quizId: selectedQuizId })
+    });
+    const data = await response.json();
+
+    if (!data.success) {
+      showError(data.error || '問題の取得に失敗しました');
+      return;
+    }
+
+    currentQuizData = data.quiz;
+    displayQuiz(data.quiz);
+    closeQuizListModal();
+
+    const statsResponse = await fetch('/api/stats');
+    const statsData = await statsResponse.json();
+    await updateStats(statsData.stats);
+  } catch (error) {
+    showError(`エラーが発生しました: ${error.message}`);
+  }
 }
 
 /**

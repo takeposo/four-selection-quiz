@@ -34,7 +34,43 @@
         <p>残りクイズ数: 易しい <span id="easyCount">0</span> 問、普通 <span id="normalCount">0</span> 問、難しい <span id="hardCount">0</span> 問</p>
       </div>
       <div class="controls">
+        <button id="listSelectBtn" class="secondary-btn" onclick="openQuizListModal()">問題一覧から選ぶ</button>
         <button id="resetBtn" class="reset-btn" onclick="resetQuizzes()">リセット</button>
+      </div>
+    </div>
+
+    <div id="quizListModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="quizListModalTitle">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 id="quizListModalTitle">問題一覧から選ぶ</h2>
+          <button class="modal-close" onclick="closeQuizListModal()" aria-label="閉じる">×</button>
+        </div>
+        <div class="modal-body">
+          <label class="modal-field">
+            <span>選び方</span>
+            <select id="quizListModeSelect" onchange="onQuizListModeChange()">
+              <option value="all">全問題から選ぶ</option>
+              <option value="difficulty">難易度毎の一覧から選ぶ</option>
+            </select>
+          </label>
+          <label id="quizListDifficultyField" class="modal-field hidden">
+            <span>難易度</span>
+            <select id="quizListDifficultySelect" onchange="onQuizListDifficultyChange()">
+              <option value="易しい">易しい</option>
+              <option value="普通">普通</option>
+              <option value="難しい">難しい</option>
+            </select>
+          </label>
+          <div id="quizListContainer" class="quiz-list"></div>
+          <div class="quiz-list-pagination">
+            <button id="quizListPrevBtn" onclick="changeQuizListPage(-1)">前へ</button>
+            <span id="quizListPageInfo"></span>
+            <button id="quizListNextBtn" onclick="changeQuizListPage(1)">次へ</button>
+          </div>
+          <div class="modal-actions">
+            <button id="confirmQuizListBtn" class="btn-check" onclick="selectQuizFromList()">選択</button>
+          </div>
+        </div>
       </div>
     </div>
 
